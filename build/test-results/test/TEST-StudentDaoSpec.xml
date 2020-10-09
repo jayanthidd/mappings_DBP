@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="StudentDaoSpec" tests="4" skipped="0" failures="0" errors="0" timestamp="2020-10-09T08:13:57" hostname="CE-106" time="1.057">
+  <properties/>
+  <testcase name="createAlreadyExistingStudentReturnsFalse" classname="StudentDaoSpec" time="1.037"/>
+  <testcase name="createPersistsStudentInDatabaseAndReturnsTrue" classname="StudentDaoSpec" time="0.013"/>
+  <testcase name="ensureThatToUpperCaseResultsInALlUpperCaseLetters" classname="StudentDaoSpec" time="0.003"/>
+  <testcase name="createNullAsStudentReturnsFalse" classname="StudentDaoSpec" time="0.003"/>
+  <system-out><![CDATA[[EL Info]: 2020-10-09 10:13:57.952--ServerSession(1159458385)--EclipseLink, version: Eclipse Persistence Services - 2.7.7.v20200504-69f2c2b80d
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

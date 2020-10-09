@@ -2,6 +2,7 @@ import at.campus02.dbp2.jpa.Gender;
 import at.campus02.dbp2.jpa.Student;
 import at.campus02.dbp2.jpa.StudentDao;
 import at.campus02.dbp2.jpa.StudentDaoImpl;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +12,7 @@ import javax.persistence.Persistence;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -21,6 +23,7 @@ public class StudentDaoSpec {
     private EntityManager manager;
     private StudentDao dao;
 
+    //<editor-fold description ="Help Methods">
     private Student prepareStudent(String firstName, String lastName, Gender gender, String birthdayString){
         Student student = new Student();
         student.setFirstName(firstName);
@@ -37,7 +40,7 @@ public class StudentDaoSpec {
         manager.persist(student);
         manager.getTransaction().commit();
     }
-
+    //</editor-fold>
     @Before
     public void setup() {
         factory = Persistence.createEntityManagerFactory("nameOfJpaPersistenceUnit");
@@ -45,6 +48,16 @@ public class StudentDaoSpec {
         dao = new StudentDaoImpl(factory);
     }
 
+    @After
+    public void tearDown(){
+        dao.close();
+        if(manager.isOpen())// if we do not check and we try to close an already closed manager or factoy, it will throw an exception
+            manager.close();
+        if(factory.isOpen())
+            factory.close();
+    }
+
+    //<editor-fold description ="CREATE">
     @Test
     public void ensureThatToUpperCaseResultsInALlUpperCaseLetters() {
         //given
@@ -95,7 +108,9 @@ public class StudentDaoSpec {
         //then
         assertThat(result, is(false));
     }
+    //</editor-fold>
 
+    //<editor-fold description ="FIND">
     @Test
     public void findStudentReturnsEntityFromDatabase(){
         //given
@@ -123,7 +138,9 @@ public class StudentDaoSpec {
         //expect
         assertThat(dao.find(4711), is(nullValue()));
     }
+    //</editor-fold>
 
+    //<editor-fold description ="UPDATE">
     @Test
     public void updateStudentChangesValuesInDatabase(){
         //given
@@ -163,5 +180,56 @@ public class StudentDaoSpec {
         //then
         assertThat(result,is(nullValue()));
     }
+    //</editor-fold>
+
+    //<editor-fold description ="DELETE">
+    @Test
+    public void deleteStudentRemovesEntityFromDatabase(){
+        //given
+        Student student = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        create(student);
+
+        //when
+        manager.clear();//cache must be cleared
+        dao.delete(student);
+        Student deleted = manager.find(Student.class,student.getId());
+
+        //then
+        assertThat(deleted,is(nullValue()));
+    }
+
+    @Test
+    public void deleteNullOrNotExistingStudentDoesNotThrowException(){
+        //expect no exception
+        Student student = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        dao.delete(null);
+        dao.delete(student);
+    }
+    //</editor-fold>
+
+    //<editor-fold description ="QUERIES">
+
+    @Test
+    public void findAllReturnsAllEntitiesFromDatabase() {
+        //given
+        Student student1 = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        Student student3 = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+
+        create(student1);
+        create(student2);
+        create(student3);
+
+        manager.clear();
+
+        //when
+        List<Student> result = dao.findAll();
+
+        //then
+        assertThat(result.size(),is(3));
+        assertThat(result,hasItems(student1,student2,student3));
+    }
+
+    //</editor-fold>
 }
 

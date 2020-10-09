@@ -39,6 +39,8 @@ public class StudentDaoImpl implements StudentDao{
 
     @Override
     public void delete(Student student) {
+        if(student==null || find(student.getId())==null)
+            return;
         manager.getTransaction().begin();
         //manager.remove(manager.merge(customer));
         Student managed = manager.merge(student);

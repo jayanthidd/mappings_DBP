@@ -95,5 +95,73 @@ public class StudentDaoSpec {
         //then
         assertThat(result, is(false));
     }
+
+    @Test
+    public void findStudentReturnsEntityFromDatabase(){
+        //given
+        Student student = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        create(student);
+
+        //when
+        //the student which our method is going to find
+        Student result = dao.find(student.getId());
+        //the student which we are directly retrieving from the database
+        Student fromDB = manager.find(Student.class, student.getId());
+
+        //then
+        assertThat(result,is(fromDB));
+    }
+
+    @Test
+    public void findStudentWithNullAsIdReturnsNull(){
+        //expect
+        assertThat(dao.find(null),is(nullValue()));
+    }
+
+    @Test
+    public void finsStudentWithNotExistingIdReturnsNull(){
+        //expect
+        assertThat(dao.find(4711), is(nullValue()));
+    }
+
+    @Test
+    public void updateStudentChangesValuesInDatabase(){
+        //given
+        Student student = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        create(student);
+
+        //since we are using the same entity manager for persisting and then finding
+        manager.clear();
+
+        //when
+        student.setLastName("Married-Now");
+        //the student which our method is going to find
+        Student result = dao.update(student);
+        //the student which we are directly retrieving from the database
+        Student fromDB = manager.find(Student.class, student.getId());
+
+        //then
+        assertThat(result.getLastName(),is("Married-Now"));
+        assertThat(fromDB.getLastName(),is("Married-Now"));
+        assertThat(result,is(fromDB));
+    }
+
+    @Test
+    public void updateNullAsStudentReturnsNull(){
+        //expect
+        assertThat(dao.update(null),is(nullValue()));//null instead of nullValue() will not work here
+    }
+
+    @Test
+    public void updateNotExistingStudentReturnsNull(){
+        //given
+        Student student = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+
+        //when
+        Student result = dao.update(student);
+
+        //then
+        assertThat(result,is(nullValue()));
+    }
 }
 

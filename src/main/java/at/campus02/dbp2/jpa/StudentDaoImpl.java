@@ -26,25 +26,31 @@ public class StudentDaoImpl implements StudentDao{
 
     @Override
     public Student update(Student student) {
-        if(student == null)
+        if(student == null || find(student.getId()) == null)
             return null;
         else {
             manager.getTransaction().begin();
-            manager.merge(student);
+            Student updated = manager.merge(student);
             manager.flush();
             manager.getTransaction().commit();
-            return student;
+            return updated;
         }
     }
 
     @Override
     public void delete(Student student) {
-
+        manager.getTransaction().begin();
+        //manager.remove(manager.merge(customer));
+        Student managed = manager.merge(student);
+        manager.remove(managed);
+        manager.getTransaction().commit();
     }
 
     @Override
     public Student find(Integer id) {
-        return null;
+        if(id==null)
+            return null;
+        return manager.find(Student.class,id);
     }
 
     @Override

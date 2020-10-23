@@ -3,10 +3,13 @@ package at.campus02.dbp2.jpa;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity
+@Entity // This is the class that will get converted to a table in the back end
+@NamedQuery(name = "Student.findAllByGender", query = "select s from Student s WHERE s.gender  = :gender")
+// Named queries help organize code
 public class Student {
     @Id
     @GeneratedValue

@@ -10,9 +10,9 @@ public interface StudentDao {
     Student find(Integer id);
 
     List<Student> findAll();
-    List<Student> findAllByLastName(Student student);
+    List<Student> findAllByLastName(String lastname);
     List<Student> findAllBornBefore(int year);
-    List<Student> findAllByGender(String gender);
+    List<Student> findAllByGender(Gender gender);
 
     void close();
 

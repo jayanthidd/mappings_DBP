@@ -230,6 +230,135 @@ public class StudentDaoSpec {
         assertThat(result,hasItems(student1,student2,student3));
     }
 
+    @Test
+    public void findByLastnameReturnsMatchingStudents(){
+        //given
+        Student student1 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1978");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        Student student3 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1978");
+
+        create(student1);
+        create(student2);
+        create(student3);
+
+        manager.clear();
+
+        //when
+        List<Student> result = dao.findAllByLastName("secondName");
+
+        //then
+        assertThat(result.size(),is(2));
+        assertThat(result,hasItems(student1,student3));
+        assertThat(result.contains(student2), is(false));
+    }
+
+    @Test
+    public void findByLastnameReturnsMatchingStudentsCaseInsensitive(){
+        //given
+        Student student1 = prepareStudent("firstName", "SecondName", Gender.FEMALE, "13.05.1978");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        Student student3 = prepareStudent("firstName", "secondname", Gender.FEMALE, "13.05.1978");
+
+        create(student1);
+        create(student2);
+        create(student3);
+
+        manager.clear();
+
+        //when
+        List<Student> result = dao.findAllByLastName("secondName");
+
+        //then
+        assertThat(result.size(),is(2));
+        assertThat(result,hasItems(student1,student3));
+        assertThat(result.contains(student2), is(false));
+    }
+
+    @Test
+    public void findByLastNameWithNullParameterReturnsAllEntities(){
+        //given
+        Student student1 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1978");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.FEMALE, "13.05.1978");
+        Student student3 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1978");
+
+        create(student1);
+        create(student2);
+        create(student3);
+
+        manager.clear();
+
+        //when
+        List<Student> result = dao.findAllByLastName(null);
+
+        //then
+        assertThat(result.size(),is(3));
+        assertThat(result,hasItems(student1,student2,student3));
+    }
+
+    @Test
+    public void findByGenderReturnsMatchingStudents(){
+        //given
+        Student student1 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1978");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.MALE, "13.05.1978");
+        Student student3 = prepareStudent("firstName", "secondName", Gender.MALE, "13.05.1978");
+
+        create(student1);
+        create(student2);
+        create(student3);
+
+        manager.clear();
+
+        //when
+        List<Student> result = dao.findAllByGender(Gender.MALE);
+
+        //then
+        assertThat(result,hasItems(student2,student3));
+    }
+
+    @Test
+    public void findByGenderWithNullParameterReturnsAnEmptyList(){
+        //given
+        Student student1 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1978");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.MALE, "13.05.1978");
+        Student student3 = prepareStudent("firstName", "secondName", Gender.MALE, "13.05.1978");
+
+        create(student1);
+        create(student2);
+        create(student3);
+
+        //when
+        List<Student> result = dao.findAllByGender(null);
+
+        //then
+        assertThat(result.isEmpty(),is(true));
+    }
+
+    @Test
+    public void findAllBornBeforeReturnsMatchingEntities(){
+        //given
+        Student student1 = prepareStudent("firstName", "secondName", Gender.FEMALE, "13.05.1975");
+        Student student2 = prepareStudent("firstName", "lastName", Gender.MALE, "13.05.1979");
+        Student student3 = prepareStudent("firstName", "secondName", Gender.MALE, "13.05.1981");
+        Student student4 = prepareStudent("firstName", "secondName", Gender.MALE, null);
+
+        create(student1);
+        create(student2);
+        create(student3);
+        create(student4);
+
+        //then
+        assertThat(dao.findAllBornBefore(1990).size(),is(3));
+        assertThat(dao.findAllBornBefore(1990),hasItems(student1,student2,student3));
+
+        assertThat(dao.findAllBornBefore(1980).size(),is(2));
+        assertThat(dao.findAllBornBefore(1980),hasItems(student1,student2));
+
+        assertThat(dao.findAllBornBefore(1981).size(),is(2));
+        assertThat(dao.findAllBornBefore(1980),hasItems(student1,student2));
+
+        assertThat(dao.findAllBornBefore(1970).isEmpty(),is(true));
+    }
+
     //</editor-fold>
 }
 
